@@ -75,13 +75,22 @@
         .search-container { display: flex; gap: 6px; margin-bottom: 8px; }
         .input-group { display: grid; grid-template-columns: 1.5fr 0.7fr 0.8fr; gap: 6px; align-items: end; }
         
-        /* GRUPO DE BOTÕES DUPLOS (ADICIONAR / FIXAR) */
         .action-group { grid-column: span 3; display: flex; gap: 6px; margin-top: 4px; }
         button { border: none; border-radius: 6px; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: transform 0.1s ease, background-color 0.3s, color 0.3s; }
-        .btn-half { flex: 1; padding: 10px; font-size: 11px; }
+        .btn-half { flex: 1; padding: 10px; font-size: 10px; } 
         
         #add-btn { background-color: var(--btn-add); color: var(--btn-add-text); }
         #add-star-btn { background-color: var(--btn-star); color: var(--btn-star-text); }
+        #remove-star-btn { background-color: var(--btn-danger); color: white; } 
+        
+        #btn-toggle-lista { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; font-size: 10px; border-radius: 6px; margin-bottom: 8px; width: 100%; transition: all 0.3s; }
+        
+        /* NOVO ESTILO: BOTÃO DE LIMPAR (X) */
+        .btn-limpar {
+            position: absolute; right: 5px; bottom: 8px; color: var(--accent);
+            font-size: 13px; padding: 4px; cursor: pointer; transition: transform 0.1s;
+        }
+        .btn-limpar:active { transform: scale(0.8); color: var(--btn-danger); }
         
         table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); table-layout: fixed; transition: all 0.3s; }
         th { background-color: var(--highlight); color: var(--accent); text-align: left; padding: 10px; font-size: 10px; text-transform: uppercase; transition: all 0.3s; }
@@ -159,20 +168,25 @@
 
     <div class="card">
         <div class="search-container">
-            <input type="text" id="filtroBusca" placeholder="🔍 Buscar..." oninput="filtrarGeral()">
+            <div style="position: relative; flex: 1;">
+                <input type="text" id="filtroBusca" placeholder="🔍 Buscar..." oninput="filtrarGeral()" style="padding-right: 25px;">
+                <span class="btn-limpar" onclick="limparCampo('filtroBusca')">✖</span>
+            </div>
             <select id="filtroSelect" style="max-width: 100px;" onchange="filtrarGeral()">
                 <option value="">📂 ITENS</option>
             </select>
         </div>
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
         <div class="input-group">
-            <div>
+            <div style="position: relative;">
                 <label>Produto</label>
-                <input type="text" id="novoProduto" placeholder="Item" oninput="autoPreencherUnidade()">
+                <input type="text" id="novoProduto" placeholder="Item" oninput="autoPreencherUnidade()" style="padding-right: 25px;">
+                <span class="btn-limpar" onclick="limparCampo('novoProduto')">✖</span>
             </div>
-            <div>
+            <div style="position: relative;">
                 <label>Qtd</label>
-                <input type="text" id="novoQtd" placeholder="1/2" onblur="calcularMath(this)" ondblclick="duploCliqueQtd(this)">
+                <input type="text" id="novoQtd" placeholder="1/2" onblur="calcularMath(this)" ondblclick="duploCliqueQtd(this)" style="padding-right: 25px;">
+                <span class="btn-limpar" onclick="limparCampo('novoQtd')">✖</span>
             </div>
             <div>
                 <label>Unid</label>
@@ -184,11 +198,15 @@
             
             <div class="action-group">
                 <button id="add-btn" class="btn-half" onclick="adicionarManual(false)">Adicionar</button>
-                <button id="add-star-btn" class="btn-half" onclick="adicionarManual(true)">⭐ Fixar Padrão</button>
+                <button id="add-star-btn" class="btn-half" onclick="adicionarManual(true)">⭐ Fixar</button>
+                <button id="remove-star-btn" class="btn-half" onclick="removerDoPadrao()">🗑️ Padrão</button>
             </div>
+
         </div>
         <div id="status-save">Salvo.</div>
     </div>
+
+    <button id="btn-toggle-lista" onclick="alternarLista()">🔽 Ocultar Lista de Estoque</button>
 
     <table id="tabela-estoque">
         <thead>
@@ -254,6 +272,32 @@
             } catch (e) {}
         }
 
+        // NOVA FUNÇÃO: Limpar o campo de texto ao clicar no "X"
+        function limparCampo(idCaixaTexto) {
+            darFeedback(); // Usa aquele cliquezinho vibratório legal
+            document.getElementById(idCaixaTexto).value = ''; // Esvazia o texto
+            document.getElementById(idCaixaTexto).focus(); // Põe o cursor de volta pra você digitar rápido
+            
+            // Se for a caixa de busca, avisa a tabela para mostrar tudo de novo
+            if (idCaixaTexto === 'filtroBusca') {
+                filtrarGeral();
+            }
+        }
+
+        function alternarLista() {
+            darFeedback();
+            var tabela = document.getElementById("tabela-estoque");
+            var btnToggle = document.getElementById("btn-toggle-lista");
+
+            if (tabela.style.display === "none") {
+                tabela.style.display = "table";
+                btnToggle.innerHTML = "🔽 Ocultar Lista de Estoque";
+            } else {
+                tabela.style.display = "none";
+                btnToggle.innerHTML = "▶️ Mostrar Lista de Estoque";
+            }
+        }
+
         function alternarTema() {
             darFeedback(); document.body.classList.toggle('light-mode');
             localStorage.setItem('temaEstoque', document.body.classList.contains('light-mode') ? 'claro' : 'escuro');
@@ -304,20 +348,20 @@
         var areaCompras = document.getElementById("area-compras");
         var ulCompras = document.getElementById("lista-compras-visual");
 
-        // CARREGA A LISTA DE FÁBRICA + OS ITENS FIXADOS DO USUÁRIO
         function carregarListaPadrao() {
             var listaCombinada = [];
             
-            // 1. Itens padrão do sistema
+            var ocultosSistema = JSON.parse(localStorage.getItem("itensOcultosPadrao_v3") || "[]");
+            
             produtosPadrao.forEach(p => { 
                 var d = p.split("|"); 
-                listaCombinada.push({ n: d[0], q: "", u: d[1], c: false });
+                if (!ocultosSistema.includes(d[0].toLowerCase())) {
+                    listaCombinada.push({ n: d[0], q: "", u: d[1], c: false });
+                }
             });
 
-            // 2. Itens do usuário marcados com Estrela (fixados)
             var favoritosUsuario = JSON.parse(localStorage.getItem("meusItensPadrao_v3") || "[]");
             favoritosUsuario.forEach(item => {
-                // Adiciona apenas se já não existir no padrão (evita duplicação)
                 if(!listaCombinada.some(i => i.n.toLowerCase() === item.n.toLowerCase())) {
                     listaCombinada.push({ n: item.n, q: "", u: item.u, c: false });
                 }
@@ -463,7 +507,6 @@
             }); 
         }
         
-        // FUNÇÃO ATUALIZADA (LIDA COM O BOTÃO NORMAL E COM O BOTÃO DE FIXAR)
         function adicionarManual(salvarNoPadrao) {
             var p = document.getElementById("novoProduto").value.trim();
             var q = document.getElementById("novoQtd").value.trim();
@@ -471,14 +514,11 @@
             if (!p) { mostrarToast("⚠️ Digite o nome do produto!"); return; }
             darFeedback();
             
-            // Adiciona na tela e ordena
             inserirLinha(p, q, u, false); 
             salvarEOrdenar(); 
             
-            // Se o usuário clicou no botão Dourado (Fixar)
             if(salvarNoPadrao) {
                 var favoritosUsuario = JSON.parse(localStorage.getItem("meusItensPadrao_v3") || "[]");
-                // Checa se já existe para não duplicar
                 if(!favoritosUsuario.some(item => item.n.toLowerCase() === p.toLowerCase())) {
                     favoritosUsuario.push({ n: p, u: u });
                     localStorage.setItem("meusItensPadrao_v3", JSON.stringify(favoritosUsuario));
@@ -494,6 +534,32 @@
             document.getElementById("novoQtd").value = "";
         }
         
+        function removerDoPadrao() {
+            var p = document.getElementById("novoProduto").value.trim();
+            if (!p) { mostrarToast("⚠️ Digite o nome do produto na caixa para remover!"); return; }
+            darFeedback();
+
+            var favoritosUsuario = JSON.parse(localStorage.getItem("meusItensPadrao_v3") || "[]");
+            var novaListaFavoritos = favoritosUsuario.filter(item => item.n.toLowerCase() !== p.toLowerCase());
+            localStorage.setItem("meusItensPadrao_v3", JSON.stringify(novaListaFavoritos));
+
+            var ocultosSistema = JSON.parse(localStorage.getItem("itensOcultosPadrao_v3") || "[]");
+            if (!ocultosSistema.includes(p.toLowerCase())) {
+                ocultosSistema.push(p.toLowerCase());
+                localStorage.setItem("itensOcultosPadrao_v3", JSON.stringify(ocultosSistema));
+            }
+
+            document.querySelectorAll("#lista-itens tr").forEach(r => {
+                var nomeTabela = r.querySelector(".nome-prod").innerText.toLowerCase();
+                if(nomeTabela === p.toLowerCase()) { r.remove(); }
+            });
+
+            salvarDados(); atualizarDropdown();
+            mostrarToast("Removido do padrão! 🚫");
+            document.getElementById("novoProduto").value = "";
+            document.getElementById("novoQtd").value = "";
+        }
+
         function filtrarGeral() {
             var tBusca = buscaInput.value.toLowerCase(); var tSelect = selectFiltro.value.toLowerCase();
             document.querySelectorAll("#lista-itens tr").forEach(r => {
@@ -510,8 +576,10 @@
         }
         
         function resetarTudo() { 
-            mostrarConfirmacao("ATENÇÃO: Isso carregará a lista padrão (Sistema + Seus Itens Fixados).\nConfirmar?", () => { 
-                localStorage.removeItem("estoqueDados_v3"); location.reload(); 
+            mostrarConfirmacao("ATENÇÃO: Isso restaurará a lista de fábrica do ZERO.\nConfirmar?", () => { 
+                localStorage.removeItem("estoqueDados_v3"); 
+                localStorage.removeItem("itensOcultosPadrao_v3");
+                location.reload(); 
             }); 
         }
 
