@@ -3,151 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Estoque V4.7 Revisado</title>
-    
+    <title>Estoque V4.7 Modular</title>
     <link rel="icon" href="icone.png" type="image/png">
     <link rel="apple-touch-icon" href="icone.png">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <style>
-        :root {
-            --bg: #121212; --card: #1E1E1E; --text: #E0E0E0; --border: #444444; 
-            --accent: #888888; --highlight: #2C2C2C; --edit-bg: #2A2A20;
-            --shop-bg: #2C1A1A; --borda-caixas: #555555; 
-            --btn-add: #E0E0E0; --btn-add-text: #121212;
-            --btn-star: #F59E0B; --btn-star-text: #FFFFFF;
-            --btn-red: #B91C1C; --btn-green: #047857;  
-            --btn-blue: #1D4ED8; --btn-purple: #6D28D9; 
-            --btn-danger: #EF4444; 
-
-            --cat-carnes: #ef4444; --cat-laticinios: #fbbf24; 
-            --cat-horti: #10b981; --cat-limpeza: #3b82f6;   
-            --cat-mercearia: #8b5cf6; --cat-padaria: #d97706;   
-            --cat-bebidas: #06b6d4; --cat-temperos: #f43f5e;  
-            --cat-outros: #6b7280;    
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body { 
-            font-family: 'Inter', sans-serif; font-weight: 600; max-width: 100%; 
-            margin: 0; padding: 10px; background-color: var(--bg); color: var(--text); 
-            padding-bottom: 80px; 
-        }
-
-        /* --- MUDANÇA 3: OPACIDADE 80% --- */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url('fundo-pizza.jpg'); background-size: cover; background-position: center;
-            opacity: 0.8; 
-            z-index: -1; pointer-events: none;
-        }
-        
-        .header-container { display: flex; justify-content: center; align-items: center; position: relative; margin: 10px 0; }
-        h1 { color: #FFFFFF; margin: 0; font-weight: 800; font-size: 16px; text-transform: uppercase; }
-
-        .card { background: var(--card); padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; }
-        label { font-size: 9px; margin-bottom: 4px; display: block; color: var(--accent); text-transform: uppercase; }
-        
-        input[type="text"], select { padding: 8px 10px; background-color: var(--highlight); border: 1px solid var(--borda-caixas); border-radius: 6px; font-weight: 700; color: var(--text); font-size: 16px; width: 100%; outline: none; }
-        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; margin: 0; accent-color: var(--btn-danger); }
-        
-        .btn-limpar { position: absolute; right: 5px; bottom: 8px; background: var(--btn-danger); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-
-        #assistive-touch { position: fixed; bottom: 120px; right: 15px; width: 50px; height: 50px; background-color: rgba(40, 40, 40, 0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 200; cursor: pointer; border: 1px solid var(--border); color: #E0E0E0; }
-        #search-overlay { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 400px; background: rgba(30, 30, 30, 0.98); backdrop-filter: blur(10px); border-radius: 14px; padding: 12px; z-index: 9999; display: none; }
-        .input-group { display: grid; grid-template-columns: 1.5fr 0.7fr 0.8fr; gap: 6px; align-items: end; }
-        .action-group { grid-column: span 3; display: flex; gap: 6px; margin-top: 4px; }
-        .btn-half { flex: 1; padding: 10px; font-size: 10px; } 
-        #add-btn { background-color: var(--btn-add); color: var(--btn-add-text); }
-        #add-star-btn { background-color: var(--btn-star); color: var(--btn-star-text); }
-        #remove-star-btn { background-color: var(--btn-danger); color: white; } 
-
-        .table-wrapper { position: relative; overflow-x: hidden; border-radius: 10px; border: 1px solid var(--border); background: var(--card); margin-bottom: 20px; }
-        #swipe-bg { position: absolute; right: 0; top: 0; background: var(--btn-danger); color: white; display: none; align-items: center; justify-content: center; width: 80px; z-index: 1; font-weight: bold; cursor: pointer; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { background-color: var(--highlight); color: var(--accent); text-align: left; padding: 10px; font-size: 10px; text-transform: uppercase; }
-        td { border-bottom: 1px solid var(--border); padding: 8px 6px; font-size: 13px; vertical-align: middle; background-color: var(--card); }
-        .categoria-header { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 8px 10px; color: #fff; }
-        .input-qtd-tabela { background-color: var(--edit-bg); color: #FFFFB0; text-align: center; border-radius: 4px; width: 100%; border: 1px solid var(--borda-caixas); padding: 4px 2px; font-size: 16px; font-weight: bold; }
-        
-        /* --- MUDANÇA 2: BOTÃO RESTAURAR VISÍVEL --- */
-        #btn-reset { background: #000; color: #ef4444; border: 2px solid #ef4444; width: 100%; margin-top: 20px; font-size: 10px; padding: 12px; font-weight: 800; }
-
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(2px); }
-        .modal-box { background: var(--card); padding: 25px 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; border: 1px solid var(--border); }
-        #calc-display { background: var(--edit-bg); color: #FFFFB0; font-size: 32px; text-align: right; padding: 15px; border-radius: 10px; border: 1px solid var(--borda-caixas); min-height: 65px; font-family: monospace; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calc-btn { background: var(--highlight); color: var(--text); border: 1px solid var(--border); border-radius: 10px; font-size: 22px; padding: 18px 0; font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="toast-container"></div>
+    
     <div id="modal-confirm" class="modal-overlay" style="display:none;">
         <div class="modal-box">
             <div id="modal-text">Mensagem</div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button style="flex:1; padding:12px;" onclick="fecharModal()">Cancelar</button>
-                <button id="modal-btn-confirm" style="flex:1; background:var(--btn-danger); color:white;">Confirmar</button>
+            <div class="modal-buttons">
+                <button id="modal-btn-cancel" onclick="fecharModal(); darFeedback()">Cancelar</button>
+                <button id="modal-btn-confirm">Confirmar</button>
             </div>
         </div>
     </div>
 
     <div id="modal-calc" class="modal-overlay" style="display:none;">
-        <div class="card" style="width:92%; max-width:340px;">
-            <div style="display:flex; justify-content:space-between; color:var(--accent); font-size:11px; margin-bottom:10px;">
-                <span id="calc-title">🧮 CALCULADORA</span>
-                <span onclick="fecharCalculadora()" style="color:var(--btn-danger)">✖</span>
+        <div class="calc-box">
+            <div class="calc-header">
+                <span id="calc-title">🧮 Calculadora</span>
+                <button onclick="fecharCalculadora()" class="calc-close">✖</button>
             </div>
             <div id="calc-display">0</div>
-            <div class="calc-grid" style="margin-top:15px;">
-                <button class="calc-btn" onclick="calcDigito('C')" style="color:var(--btn-danger)">C</button>
-                <button class="calc-btn" onclick="calcDigito('÷')">÷</button>
-                <button class="calc-btn" onclick="calcDigito('×')">×</button>
-                <button class="calc-btn" onclick="calcDigito('BACK')">⌫</button>
+            <div class="calc-grid">
+                <button class="calc-btn calc-bg-op" onclick="calcDigito('C')">C</button>
+                <button class="calc-btn calc-bg-op" onclick="calcDigito('÷')">÷</button>
+                <button class="calc-btn calc-bg-op" onclick="calcDigito('×')">×</button>
+                <button class="calc-btn calc-bg-op" onclick="calcDigito('BACK')">⌫</button>
                 <button class="calc-btn" onclick="calcDigito('7')">7</button>
                 <button class="calc-btn" onclick="calcDigito('8')">8</button>
                 <button class="calc-btn" onclick="calcDigito('9')">9</button>
-                <button class="calc-btn" onclick="calcDigito('-')">-</button>
+                <button class="calc-btn calc-bg-op" onclick="calcDigito('-')">-</button>
                 <button class="calc-btn" onclick="calcDigito('4')">4</button>
                 <button class="calc-btn" onclick="calcDigito('5')">5</button>
                 <button class="calc-btn" onclick="calcDigito('6')">6</button>
-                <button class="calc-btn" onclick="calcDigito('+')">+</button>
+                <button class="calc-btn calc-bg-op" onclick="calcDigito('+')">+</button>
                 <button class="calc-btn" onclick="calcDigito('1')">1</button>
                 <button class="calc-btn" onclick="calcDigito('2')">2</button>
                 <button class="calc-btn" onclick="calcDigito('3')">3</button>
-                <button class="calc-btn" style="background:var(--btn-green); grid-row:span 2;" onclick="calcSalvar()">OK</button>
-                <button class="calc-btn" onclick="calcDigito('0')" style="grid-column:span 2;">0</button>
+                <button class="calc-btn calc-bg-confirm" style="grid-row: span 2;" onclick="calcSalvar()">OK</button>
+                <button class="calc-btn" onclick="calcDigito('0')" style="grid-column: span 2;">0</button>
                 <button class="calc-btn" onclick="calcDigito(',')">,</button>
             </div>
         </div>
     </div>
 
-    <div id="assistive-touch" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+    <div id="assistive-touch" onclick="toggleSearch(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </div>
 
     <div id="search-overlay">
-        <div class="card">
-            <div style="position:relative;">
+        <div class="search-inner">
+            <div style="position: relative; flex: 1;">
                 <input type="text" id="filtroBusca" placeholder="🔍 Buscar..." oninput="filtrarGeral()">
+                <button class="btn-mic" onclick="toggleMic('busca', event)" id="btn-mic-busca">🎤</button>
                 <span class="btn-limpar" onclick="limparCampo('filtroBusca')">✖</span>
             </div>
-            <select id="filtroSelect" onchange="filtrarGeral()" style="margin-top:10px;"><option value="">📂 ITENS</option></select>
+            <select id="filtroSelect" onchange="filtrarGeral()"><option value="">📂 ITENS</option></select>
         </div>
     </div>
 
-    <div class="header-container"><h1>ESTOQUE V4.7</h1></div>
+    <div class="header-container">
+        <h1>ESTOQUE & CATEGORIAS</h1>
+        <button class="btn-theme" onclick="alternarTema()">🌓</button>
+    </div>
 
     <div class="card">
         <div class="input-group">
-            <div style="position:relative;">
+            <div style="position: relative;">
                 <label>Produto</label>
                 <input type="text" id="novoProduto" placeholder="Item" oninput="autoPreencherUnidade()">
+                <button class="btn-mic" onclick="toggleMic('produto', event)" id="btn-mic-prod">🎤</button>
                 <span class="btn-limpar" onclick="limparCampo('novoProduto')">✖</span>
             </div>
-            <div style="position:relative;">
+            <div style="position: relative;">
                 <label>Qtd</label>
                 <input type="text" id="novoQtd" placeholder="Qtd" onclick="abrirCalculadora(this)" readonly>
                 <span class="btn-limpar" onclick="limparCampo('novoQtd')">✖</span>
@@ -165,101 +99,46 @@
                 <button id="remove-star-btn" class="btn-half" onclick="removerDoPadrao()">🗑️ Padrão</button>
             </div>
         </div>
+        <div id="status-save">Salvo.</div>
     </div>
+
+    <button id="btn-toggle-lista" onclick="alternarLista()">🔽 Ocultar Lista de Estoque</button>
 
     <div class="table-wrapper">
         <div id="swipe-bg">Apagar</div>
         <table id="tabela-estoque">
-            <thead><tr><th style="width:35px;"><input type="checkbox" onchange="alternarTodos(this)"></th><th>Descrição</th><th style="width:85px;">Qtd</th><th style="width:70px;">Unid</th></tr></thead>
+            <thead><tr><th class="col-check"><input type="checkbox" id="check-todos" onchange="alternarTodos(this)"></th><th class="col-desc">Descrição</th><th class="col-qtd">Qtd</th><th class="col-unid">Unid</th></tr></thead>
             <tbody id="lista-itens-container"></tbody>
         </table>
     </div>
 
     <div class="share-group">
-        <button class="btn-zap" onclick="compartilharEstoque()">WhatsApp Estoque</button>
-        <button class="btn-zap" onclick="copiarEstoque()">Copiar Texto</button>
+        <button class="btn-zap" onclick="darFeedback(); compartilharEstoque()">Enviar Estoque</button>
+        <button id="btn-copiar" class="btn-zap" onclick="copiarEstoque()">Copiar Estoque</button>
     </div>
 
-    <div id="area-compras" class="card">
-        <h2 id="titulo-compras" style="color:var(--btn-danger); font-size:14px;">LISTA DE COMPRAS</h2>
-        <ul id="lista-compras-visual" style="list-style:none; padding:0;"></ul>
+    <div id="area-compras">
+        <h2 id="titulo-compras">LISTA DE COMPRAS</h2>
+        <ul id="lista-compras-visual"></ul>
         <div class="share-group">
-            <button class="btn-compra" onclick="compartilharComprasZap()">WhatsApp Compras</button>
+            <button class="btn-compra" onclick="darFeedback(); compartilharComprasZap()">WhatsApp Compras</button>
             <button class="btn-compra" onclick="copiarCompras()">Copiar Compras</button>
         </div>
     </div>
 
     <button id="btn-novo-dia" onclick="iniciarNovoDia()">☀ INICIAR NOVO DIA</button>
+    <button id="btn-exportar" onclick="salvarListaNoCelular()">💾 SALVAR NO CELULAR</button>
+    <button id="btn-importar" onclick="darFeedback(); document.getElementById('input-arquivo').click()">📂 CARREGAR LISTA</button>
     <button id="btn-reset" onclick="resetarTudo()">⚠ RESTAURAR LISTA PADRÃO</button>
+    
+    <input type="file" id="input-arquivo" accept=".json" style="display: none;" onchange="carregarListaDoCelular(event)">
 
-    <script>
-        let audioCtx = null; let inputCalculadoraAtual = null; let expressaoCalc = "";
-        const mapaCategorias = { 'temperos': ['orégano', 'pimenta', 'canela', 'colorau', 'caldo', 'tempero'], 'limpeza': ['detergente', 'sabão', 'esponja', 'papel', 'saco'], 'carnes': ['carne', 'frango', 'bacon', 'calabresa', 'presunto'], 'laticinios': ['queijo', 'mussarela', 'cheddar', 'requeijão', 'leite'], 'hortifruti': ['tomate', 'cebola', 'alho', 'batata', 'banana'], 'mercearia': ['arroz', 'feijão', 'trigo', 'farinha', 'açúcar', 'sal', 'macarrão', 'óleo'], 'bebidas': ['refrigerante', 'coca', 'suco', 'água', 'gelo'], 'embalagens': ['caixa', 'sacola', 'plástico'] };
-        const coresCategorias = { 'carnes': 'var(--cat-carnes)', 'laticinios': 'var(--cat-laticinios)', 'hortifruti': 'var(--cat-horti)', 'mercearia': 'var(--cat-mercearia)', 'temperos': 'var(--cat-temperos)', 'limpeza': 'var(--cat-limpeza)', 'bebidas': 'var(--cat-bebidas)', 'embalagens': 'var(--cat-outros)', 'outros': 'var(--cat-outros)' };
-        const nomesCategorias = { 'carnes': '🥩 CARNES', 'laticinios': '🧀 LATICÍNIOS', 'hortifruti': '🥦 HORTIFRUTI', 'mercearia': '🍝 MERCEARIA', 'temperos': '🧂 TEMPEROS', 'limpeza': '🧽 LIMPEZA', 'bebidas': '🥤 BEBIDAS', 'embalagens': '📦 EMBALAGENS', 'outros': '📦 OUTROS' };
+    <div class="nav-float">
+        <button class="btn-nav" onclick="darFeedback(); window.scrollTo(0,0)">▲</button>
+        <button class="btn-nav" onclick="darFeedback(); window.scrollTo(0, 9999)">▼</button>
+    </div>
 
-        function identificarCategoria(n) { let nome = n.toLowerCase(); for(let cat in mapaCategorias) { if(mapaCategorias[cat].some(t => nome.includes(t))) return cat; } return 'outros'; }
-        function darFeedback() { if(navigator.vibrate) navigator.vibrate(15); }
-
-        // --- MUDANÇA 1: ORDEM ALFABÉTICA SEM CATEGORIAS NO ZAP/CÓPIA ---
-        function gerarTextoEstoque() {
-            let t = "*ESTOQUE " + new Date().toLocaleDateString() + "*\n\n";
-            let itens = [];
-            document.querySelectorAll("#lista-itens-container tr:not(.categoria-header-row)").forEach(r => {
-                let nome = r.querySelector(".nome-prod").innerText;
-                let qtd = r.querySelector(".input-qtd-tabela").value;
-                let unid = r.querySelector("select").value;
-                itens.push(nome + ": " + (qtd ? qtd : "   ") + " " + unid);
-            });
-            itens.sort().forEach(i => t += i + "\n");
-            return t;
-        }
-
-        function gerarTextoCompras() {
-            let t = "*LISTA DE COMPRAS*\n\n";
-            let itens = [];
-            document.querySelectorAll("#lista-itens-container tr:not(.categoria-header-row)").forEach(r => {
-                if(r.querySelector("input[type='checkbox']").checked) itens.push("• " + r.querySelector(".nome-prod").innerText);
-            });
-            itens.sort().forEach(i => t += i + "\n");
-            return t;
-        }
-
-        function renderizarListaCompleta(dados) {
-            let container = document.getElementById("lista-itens-container"); container.innerHTML = "";
-            let grupos = { carnes:[], laticinios:[], hortifruti:[], mercearia:[], temperos:[], limpeza:[], bebidas:[], embalagens:[], outros:[] };
-            dados.forEach(item => { let cat = identificarCategoria(item.n); grupos[cat].push(item); });
-            for(let cat in grupos) {
-                if(grupos[cat].length > 0) {
-                    let h = document.createElement("tr"); h.classList.add("categoria-header-row");
-                    h.innerHTML = `<td colspan="4" class="categoria-header" style="background:${coresCategorias[cat]}">${nomesCategorias[cat]}</td>`;
-                    container.appendChild(h);
-                    grupos[cat].sort((a,b) => a.n.localeCompare(b.n)).forEach(item => {
-                        let tr = document.createElement("tr"); if(item.c) tr.classList.add("linha-marcada");
-                        tr.innerHTML = `<td style="text-align:center"><input type="checkbox" onchange="alternarCheck(this)" ${item.c?'checked':''}></td><td><span class="nome-prod" contenteditable="true" onblur="salvarDados()">${item.n}</span></td><td><input type="text" class="input-qtd-tabela" value="${item.q}" onclick="abrirCalculadora(this)" readonly></td><td><select onchange="salvarDados()"><option value="kg" ${item.u==='kg'?'selected':''}>kg</option><option value="g" ${item.u==='g'?'selected':''}>g</option><option value="uni" ${item.u==='uni'?'selected':''}>uni</option><option value="pct" ${item.u==='pct'?'selected':''}>pct</option><option value="cx" ${item.u==='cx'?'selected':''}>cx</option><option value="bld" ${item.u==='bld'?'selected':''}>bld</option><option value="crt" ${item.u==='crt'?'selected':''}>crt</option></select></td>`;
-                        container.appendChild(tr);
-                    });
-                }
-            }
-            atualizarDropdown();
-        }
-
-        // Lógica de Suporte
-        var storageKey = "estoque_v47";
-        function salvarDados() { let d = []; document.querySelectorAll("#lista-itens-container tr:not(.categoria-header-row)").forEach(r => { d.push({ n: r.querySelector(".nome-prod").innerText, q: r.querySelector(".input-qtd-tabela").value, u: r.querySelector("select").value, c: r.querySelector("input").checked }); }); localStorage.setItem(storageKey, JSON.stringify(d)); atualizarPainelCompras(); }
-        function abrirCalculadora(el) { darFeedback(); inputCalculadoraAtual = el; document.getElementById("modal-calc").style.display = "flex"; expressaoCalc = el.value.replace(',','.'); }
-        function fecharCalculadora() { document.getElementById("modal-calc").style.display = "none"; }
-        function calcDigito(d) { if(d==='C') expressaoCalc = ""; else if(d==='BACK') expressaoCalc = expressaoCalc.slice(0,-1); else expressaoCalc += d.replace(',','.'); document.getElementById("calc-display").innerText = expressaoCalc || "0"; }
-        function calcSalvar() { try { let r = eval(expressaoCalc.replace(/×/g,'*').replace(/÷/g,'/')); inputCalculadoraAtual.value = r.toString().replace('.',','); salvarDados(); fecharCalculadora(); } catch(e){} }
-        function toggleSearch() { let s = document.getElementById("search-overlay"); s.style.display = s.style.display === "none" ? "block" : "none"; }
-        function limparCampo(id) { document.getElementById(id).value = ""; }
-        function alternarCheck(c) { c.closest('tr').classList.toggle('linha-marcada', c.checked); salvarDados(); }
-        function atualizarPainelCompras() { let ul = document.getElementById("lista-compras-visual"); ul.innerHTML = ""; let tem = false; document.querySelectorAll("#lista-itens-container tr:not(.categoria-header-row)").forEach(r => { if(r.querySelector("input").checked) { tem = true; let li = document.createElement("li"); li.innerText = "• " + r.querySelector(".nome-prod").innerText; ul.appendChild(li); } }); document.getElementById("area-compras").style.display = tem ? "block" : "none"; }
-        function iniciarNovoDia() { if(confirm("Zerar quantidades?")) { let d = JSON.parse(localStorage.getItem(storageKey)); d.forEach(i => { i.q = ""; i.c = false; }); localStorage.setItem(storageKey, JSON.stringify(d)); location.reload(); } }
-        function resetarTudo() { if(confirm("Restaurar padrão?")) { localStorage.clear(); location.reload(); } }
-        function alternarTodos(m) { document.querySelectorAll("#lista-itens-container input[type='checkbox']").forEach(c => { c.checked = m.checked; alternarCheck(c); }); }
-        
-        window.onload = () => { let s = localStorage.getItem(storageKey); if(s) renderizarListaCompleta(JSON.parse(s)); else renderizarListaCompleta([{n:"Mussarela", q:"", u:"kg", c:false}]); };
-    </script>
+    <script src="produtos.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
