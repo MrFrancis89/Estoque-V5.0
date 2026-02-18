@@ -1,0 +1,60 @@
+:root {
+    --bg: #121212; --card: #1E1E1E; --text: #E0E0E0; --border: #444444; 
+    --accent: #888888; --highlight: #2C2C2C; --edit-bg: #2A2A20;
+    --shop-bg: #2C1A1A; --borda-caixas: #555555; 
+    --btn-add: #E0E0E0; --btn-add-text: #121212;
+    --btn-star: #F59E0B; --btn-star-text: #FFFFFF;
+    --btn-danger: #EF4444; --btn-green: #047857; 
+}
+
+body.light-mode {
+    --bg: #F0F2F5; --card: #FFFFFF; --text: #121212; --border: #D1D5DB;
+    --accent: #4B5563; --highlight: #E5E7EB;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body { 
+    font-family: 'Inter', sans-serif; font-weight: 600; 
+    margin: 0; padding: 10px; background-color: var(--bg); color: var(--text); padding-bottom: 80px; 
+}
+
+/* MUDANÇA 3: OPACIDADE EM 80% */
+body::before {
+    content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: url('fundo-pizza.jpg'); background-size: cover; background-position: center;
+    opacity: 0.8; z-index: -1; pointer-events: none;
+}
+
+.header-container { display: flex; justify-content: center; align-items: center; position: relative; margin: 10px 0; }
+h1 { color: #FFFFFF; margin: 0; font-weight: 800; font-size: 16px; text-transform: uppercase; }
+
+.card { background: var(--card); padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; }
+label { font-size: 9px; margin-bottom: 4px; display: block; color: var(--accent); text-transform: uppercase; }
+
+input[type="text"], select { padding: 8px 10px; background-color: var(--highlight); border: 1px solid var(--borda-caixas); border-radius: 6px; font-weight: 700; color: var(--text); font-size: 16px; width: 100%; outline: none; }
+
+.btn-limpar { position: absolute; right: 5px; bottom: 8px; color: var(--btn-danger); font-size: 16px; font-weight: 800; cursor: pointer; padding: 4px 8px; }
+
+#assistive-touch { position: fixed; bottom: 120px; right: 15px; width: 50px; height: 50px; background: rgba(40, 40, 40, 0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 200; border: 1px solid var(--border); color: #E0E0E0; }
+
+#search-overlay { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 400px; background: rgba(30, 30, 30, 0.98); border-radius: 14px; padding: 12px; display: none; z-index: 9999; }
+
+.table-wrapper { position: relative; overflow-x: hidden; border-radius: 10px; border: 1px solid var(--border); background: var(--card); margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+td { border-bottom: 1px solid var(--border); padding: 8px 6px; font-size: 13px; background-color: var(--card); }
+.categoria-header { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 8px 10px; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+.linha-marcada .nome-prod { color: var(--btn-danger); text-decoration: line-through; opacity: 0.8; }
+.input-qtd-tabela { background-color: var(--edit-bg); color: #FFFFB0; text-align: center; border-radius: 4px; width: 100%; border: 1px solid var(--borda-caixas); padding: 4px 2px; font-size: 16px; font-weight: bold; }
+
+/* MUDANÇA 2: BOTÃO RESTAURAR COM CONTRASTE MÁXIMO */
+#btn-reset { 
+    background-color: #000000 !important; 
+    color: #EF4444 !important; 
+    border: 2px solid #EF4444 !important; 
+    width: 100%; margin-top: 20px; font-size: 10px; padding: 15px; font-weight: 800; opacity: 1 !important;
+}
+
+.nav-float { position: fixed; right: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
+.btn-nav { width: 38px; height: 38px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--accent); }
